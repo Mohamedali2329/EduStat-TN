@@ -1,6 +1,6 @@
 # EduStat-TN — Orientation Universitaire Tunisie
 
-[![CI/CD](https://github.com/YOUR_USER/EduStat-TN/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/YOUR_USER/EduStat-TN/actions)
+[![CI/CD](https://github.com/Mohamedali2329/EduStat-TN/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/Mohamedali2329/EduStat-TN/actions)
 
 > Plateforme BI & IA d'aide à la décision pour les bacheliers tunisiens.  
 > Développée par deux étudiants en 4ème année Data Science.
@@ -30,7 +30,7 @@
 
 ```bash
 # Cloner le repo
-git clone https://github.com/YOUR_USER/EduStat-TN.git
+git clone https://github.com/Mohamedali2329/EduStat-TN.git
 cd EduStat-TN
 
 # Copier les fichiers d'environnement

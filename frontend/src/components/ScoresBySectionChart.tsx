@@ -1,0 +1,57 @@
+"use client";
+
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
+
+const SECTION_LABELS: Record<string, string> = {
+  M: "Maths",
+  S: "Sciences",
+  T: "Technique",
+  E: "Économie",
+  L: "Lettres",
+  I: "Info",
+  SP: "Sport",
+};
+
+interface Props {
+  data: {
+    section_bac: string;
+    score_moyen: number;
+    nb_scores: number;
+  }[];
+}
+
+export default function ScoresBySectionChart({ data }: Props) {
+  const formatted = data.map((d) => ({
+    ...d,
+    label: SECTION_LABELS[d.section_bac] || d.section_bac,
+  }));
+
+  return (
+    <div className="rounded-xl border bg-white p-6 shadow-sm">
+      <h2 className="mb-4 text-lg font-semibold text-slate-700">
+        Score moyen par section bac
+      </h2>
+      {data.length === 0 ? (
+        <p className="text-sm text-slate-400">Aucune donnée disponible</p>
+      ) : (
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart data={formatted}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+            <XAxis dataKey="label" />
+            <YAxis domain={[0, 4]} />
+            <Tooltip formatter={(value: number) => value.toFixed(2)} />
+            <Bar dataKey="score_moyen" name="Score moyen" fill="#8b5cf6" radius={[4, 4, 0, 0]} />
+          </BarChart>
+        </ResponsiveContainer>
+      )}
+    </div>
+  );
+}

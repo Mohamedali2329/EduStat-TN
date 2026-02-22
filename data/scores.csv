@@ -1,0 +1,41 @@
+Gouvernorat;Etablissement;Filière;Code_Filiere;Section_Bac;Score_2022;Score_2023;Score_2024
+Tunis;Faculté de Médecine de Tunis;Médecine;101;S;3.15;3.22;3.28
+Tunis;Faculté de Médecine de Tunis;Médecine;101;M;3.10;3.18;3.25
+Tunis;Faculté de Médecine de Tunis;Pharmacie;102;S;3.05;3.10;3.15
+Tunis;Faculté des Sciences de Tunis;Licence Informatique;201;M;2.45;2.52;2.58
+Tunis;Faculté des Sciences de Tunis;Licence Informatique;201;I;2.30;2.35;2.42
+Tunis;Faculté des Sciences de Tunis;Licence Mathématiques;202;M;2.60;2.65;2.70
+Tunis;ENIT;Cycle Préparatoire Ingénieur;301P;M;2.80;2.85;2.90
+Tunis;ENIT;Cycle Préparatoire Ingénieur;301P;T;2.70;2.75;2.82
+Tunis;ESSECT;Licence Gestion;401;E;1.85;1.90;1.95
+Tunis;ESSECT;Licence Finance;402;E;2.00;2.05;2.10
+Sousse;Faculté de Médecine de Sousse;Médecine;501;S;3.00;3.08;3.12
+Sousse;Faculté de Médecine de Sousse;Médecine Dentaire;502;S;2.90;2.95;3.00
+Sousse;ENISO;Cycle Ingénieur Informatique;601;M;2.50;2.55;2.60
+Sousse;ENISO;Cycle Ingénieur Informatique;601;I;2.35;2.40;2.48
+Sousse;ISG Sousse;Licence Informatique de Gestion;602;E;1.70;1.75;1.82
+Sfax;Faculté de Médecine de Sfax;Médecine;701;S;2.95;3.00;3.08
+Sfax;ENIS;Cycle Préparatoire Ingénieur;801;M;2.55;2.60;2.68
+Sfax;ENIS;Cycle Préparatoire Ingénieur;801;T;2.45;2.50;2.58
+Sfax;Faculté des Sciences de Sfax;Licence Physique;802;S;1.80;1.85;1.90
+Sfax;Faculté des Sciences de Sfax;Licence Chimie;803;S;1.65;1.70;1.75
+Monastir;Faculté de Médecine de Monastir;Médecine;901;S;2.98;3.05;3.10
+Monastir;ENIM;Cycle Préparatoire Ingénieur;902;M;2.50;2.55;2.62
+Monastir;ISIMM;Licence Informatique;903;M;2.15;2.20;2.28
+Monastir;ISIMM;Licence Informatique;903;I;2.00;2.05;2.12
+Nabeul;ISSAT Nabeul;Licence Génie Logiciel;1001;M;2.10;2.15;2.22
+Nabeul;ISSAT Nabeul;Licence Génie Logiciel;1001;I;1.95;2.00;2.08
+Nabeul;ISSAT Nabeul;Licence Génie Civil;1002;T;1.80;1.85;1.92
+Bizerte;Faculté des Sciences de Bizerte;Licence Informatique;1101;M;2.00;2.05;2.12
+Bizerte;Faculté des Sciences de Bizerte;Licence Biologie;1102;S;1.55;1.60;1.68
+Gabès;ISIG Gabès;Licence Informatique;1201;M;1.75;1.80;1.88
+Gabès;ISIG Gabès;Licence Informatique;1201;I;1.60;1.65;1.72
+Kairouan;ISIGK;Licence Info de Gestion;1301;E;1.45;1.50;1.58
+Gafsa;ISG Gafsa;Licence Gestion;1401;E;1.35;1.40;1.48
+Jendouba;ISSHJ;Licence Sciences Humaines;1501;L;1.20;1.25;1.30
+Kasserine;ISIK;Licence Informatique;1601;M;1.50;1.55;1.62
+Médenine;ISI Médenine;Licence Informatique;1701;M;1.55;1.60;1.65
+Tozeur;ISLT Tozeur;Licence Langues;1801;L;1.15;1.20;1.28
+Siliana;ISSAS;Licence Sport;1901;SP;1.10;1.15;1.22
+Béja;ISAB;Licence Agronomie;2001;S;1.40;1.45;1.52
+Zaghouan;ISSAT Zaghouan;Licence Génie Mécanique;2101;T;1.70;1.75;1.80

@@ -40,3 +40,6 @@ pgdata/
 
 # Misc
 *.log
+
+# Next.js local dev cache
+frontend/.next-dev/

@@ -25,6 +25,8 @@ from .serializers import (
     ScoreHistoriqueSerializer,
     PredictionInputSerializer,
     PredictionOutputSerializer,
+    RecommendationInputSerializer,
+    RecommendationItemSerializer,
     ChatMessageSerializer,
 )
 from .services.prediction import predict_admission
@@ -100,6 +102,16 @@ def dashboard_stats(request):
     total_scores = ScoreHistorique.objects.count()
     total_gouvernorats = Gouvernorat.objects.count()
 
+    # Detect CSV fallback mode: if "gouvernorat" values look like university names,
+    # we present this dimension as "université" in the dashboard.
+    gov_names = list(
+        Gouvernorat.objects.values_list("nom", flat=True)[:30]
+    )
+    looks_like_universite_dimension = bool(gov_names) and all(
+        n.strip().lower().startswith(("universite", "université")) for n in gov_names
+    )
+    zone_label = "université" if looks_like_universite_dimension else "gouvernorat"
+
     # Score moyen par année
     scores_par_annee = (
         ScoreHistorique.objects
@@ -163,6 +175,10 @@ def dashboard_stats(request):
         )
 
     return Response({
+        "meta": {
+            "zone_label": zone_label,
+            "score_scale": "reel",
+        },
         "totaux": {
             "gouvernorats": total_gouvernorats,
             "universites": total_universites,
@@ -183,7 +199,7 @@ def dashboard_stats(request):
 def prediction_view(request):
     """
     POST /api/predict/
-    Body: { "score": 2.85, "section_bac": "S", "filiere_code": "601" }
+    Body: { "score": 130, "section_bac": "S", "filiere_code": "601" }
     """
     serializer = PredictionInputSerializer(data=request.data)
     if not serializer.is_valid():
@@ -199,6 +215,113 @@ def prediction_view(request):
         return Response({"error": result["error"]}, status=status.HTTP_404_NOT_FOUND)
 
     return Response(PredictionOutputSerializer(result).data)
+
+
+@api_view(["POST"])
+def recommendations_view(request):
+    """
+    POST /api/recommendations/
+    Body: { "score": 130, "section_bac": "S", "limit": 10 }
+    """
+    serializer = RecommendationInputSerializer(data=request.data)
+    if not serializer.is_valid():
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    score = float(serializer.validated_data["score"])
+    section = serializer.validated_data["section_bac"].upper()
+    limit = int(serializer.validated_data.get("limit", 10))
+
+    stats_rows = (
+        ScoreHistorique.objects
+        .filter(section_bac=section)
+        .values("filiere_id")
+        .annotate(
+            score_min=Min("score_dernier_admis"),
+            score_moyen=Avg("score_dernier_admis"),
+            score_max=Max("score_dernier_admis"),
+        )
+    )
+    stats_by_filiere = {
+        row["filiere_id"]: {
+            "score_min": float(row["score_min"]),
+            "score_moyen": float(row["score_moyen"]),
+            "score_max": float(row["score_max"]),
+        }
+        for row in stats_rows
+    }
+
+    latest_scores = {}
+    for s in (
+        ScoreHistorique.objects
+        .filter(section_bac=section)
+        .select_related("filiere", "filiere__universite", "filiere__universite__gouvernorat")
+        .order_by("filiere_id", "-annee")
+    ):
+        if s.filiere_id not in latest_scores:
+            latest_scores[s.filiere_id] = s
+
+    if not latest_scores:
+        return Response({
+            "section_bac": section,
+            "score": score,
+            "total": 0,
+            "results": [],
+            "message": "Aucune donnée disponible pour cette section.",
+        })
+
+    candidates = []
+    for filiere_id, latest in latest_scores.items():
+        stats = stats_by_filiere.get(filiere_id)
+        if not stats:
+            continue
+
+        dernier_seuil = float(latest.score_dernier_admis)
+        marge = score - dernier_seuil
+
+        # On garde les cas possibles et les cas proches (ambitieux) à -5 points.
+        if marge < -5:
+            continue
+
+        if marge >= 8:
+            proba = 0.92
+            niveau = "Tres favorable"
+        elif marge >= 3:
+            proba = 0.78
+            niveau = "Favorable"
+        elif marge >= 0:
+            proba = 0.62
+            niveau = "Possible"
+        elif marge >= -3:
+            proba = 0.45
+            niveau = "Limite"
+        else:
+            proba = 0.30
+            niveau = "Ambitieux"
+
+        candidates.append({
+            "filiere_code": latest.filiere.code,
+            "filiere_nom": latest.filiere.nom,
+            "universite_nom": latest.filiere.universite.nom,
+            "gouvernorat": latest.filiere.universite.gouvernorat.nom,
+            "type_diplome": latest.filiere.type_diplome or "",
+            "score_min": round(stats["score_min"], 2),
+            "score_moyen": round(stats["score_moyen"], 2),
+            "score_max": round(stats["score_max"], 2),
+            "dernier_seuil": round(dernier_seuil, 2),
+            "marge": round(marge, 2),
+            "probabilite_estimee": round(proba, 2),
+            "niveau": niveau,
+        })
+
+    candidates.sort(key=lambda item: (item["probabilite_estimee"], item["marge"], item["score_max"]), reverse=True)
+    top_results = candidates[:limit]
+
+    return Response({
+        "section_bac": section,
+        "score": score,
+        "total": len(top_results),
+        "results": RecommendationItemSerializer(top_results, many=True).data,
+    })
 
 
 # ── Chatbot Endpoint ─────────────────────────────────────────────────

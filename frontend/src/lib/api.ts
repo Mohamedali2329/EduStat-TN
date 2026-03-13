@@ -19,6 +19,10 @@ async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
 /* ── Types ──────────────────────────────────────────── */
 
 export interface DashboardStats {
+  meta?: {
+    zone_label?: string;
+    score_scale?: string;
+  };
   totaux: {
     gouvernorats: number;
     universites: number;
@@ -59,10 +63,47 @@ export interface PredictionResult {
   conseil: string;
 }
 
+export interface RecommendationItem {
+  filiere_code: string;
+  filiere_nom: string;
+  universite_nom: string;
+  gouvernorat: string;
+  type_diplome: string;
+  score_min: number;
+  score_moyen: number;
+  score_max: number;
+  dernier_seuil: number;
+  marge: number;
+  probabilite_estimee: number;
+  niveau: string;
+}
+
+export interface RecommendationResponse {
+  section_bac: string;
+  score: number;
+  total: number;
+  results: RecommendationItem[];
+}
+
 export interface ChatResponse {
   response: string;
   model: string;
   usage: { prompt_tokens: number; completion_tokens: number; total_tokens: number };
+}
+
+export interface FiliereItem {
+  id: number;
+  code: string;
+  nom: string;
+  universite_nom?: string;
+  gouvernorat?: string;
+}
+
+export interface PaginatedResponse<T> {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: T[];
 }
 
 /* ── API Calls ──────────────────────────────────────── */
@@ -76,6 +117,12 @@ export const api = {
       body: JSON.stringify({ score, section_bac, filiere_code }),
     }),
 
+  recommend: (score: number, section_bac: string, limit = 10) =>
+    apiFetch<RecommendationResponse>("/api/recommendations/", {
+      method: "POST",
+      body: JSON.stringify({ score, section_bac, limit }),
+    }),
+
   chat: (message: string, history: { role: string; content: string }[] = []) =>
     apiFetch<ChatResponse>("/api/chat/", {
       method: "POST",
@@ -83,7 +130,7 @@ export const api = {
     }),
 
   getFilieres: (params?: string) =>
-    apiFetch<{ results: { id: number; code: string; nom: string }[] }>(
+    apiFetch<PaginatedResponse<FiliereItem>>(
       `/api/filieres/${params ? `?${params}` : ""}`
     ),
 };

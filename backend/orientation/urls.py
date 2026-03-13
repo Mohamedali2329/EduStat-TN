@@ -13,6 +13,7 @@ urlpatterns = [
     path("", include(router.urls)),
     path("stats/dashboard/", views.dashboard_stats, name="dashboard-stats"),
     path("predict/", views.prediction_view, name="predict"),
+    path("recommendations/", views.recommendations_view, name="recommendations"),
     path("chat/", views.chatbot_view, name="chat"),
     path("health/", views.health_check, name="health-check"),
 ]

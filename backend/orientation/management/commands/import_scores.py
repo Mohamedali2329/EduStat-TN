@@ -19,6 +19,7 @@ from orientation.models import Gouvernorat, Universite, Filiere, ScoreHistorique
 # Mapping flexible des noms de colonnes CSV → champs internes
 COLUMN_ALIASES = {
     "gouvernorat": ["gouvernorat", "gov", "region"],
+    "universite": ["universite", "université", "university"],
     "etablissement": ["etablissement", "université", "universite", "institution"],
     "filiere": ["filière", "filiere", "formation", "specialite"],
     "code_filiere": ["code_filiere", "code", "code_filière"],
@@ -26,6 +27,7 @@ COLUMN_ALIASES = {
     "score_2022": ["score_2022", "score2022", "s2022"],
     "score_2023": ["score_2023", "score2023", "s2023"],
     "score_2024": ["score_2024", "score2024", "s2024"],
+    "score_2025": ["score_2025", "score2025", "s2025"],
 }
 
 
@@ -104,7 +106,12 @@ class Command(BaseCommand):
             headers = next(reader)
             col_map = _resolve_columns(headers)
 
-            required = ["gouvernorat", "etablissement", "filiere"]
+            required = ["filiere"]
+            # Accept multiple real-world CSV layouts where gouvernorat is missing.
+            if "gouvernorat" not in col_map and "universite" not in col_map:
+                required.append("gouvernorat")
+            if "etablissement" not in col_map and "universite" not in col_map:
+                required.append("etablissement")
             missing = [r for r in required if r not in col_map]
             if missing:
                 raise CommandError(
@@ -117,8 +124,20 @@ class Command(BaseCommand):
                     continue  # skip empty rows
 
                 try:
-                    gov_name = row[col_map["gouvernorat"]].strip()
-                    etab_name = row[col_map["etablissement"]].strip()
+                    if "gouvernorat" in col_map:
+                        gov_name = row[col_map["gouvernorat"]].strip()
+                    elif "universite" in col_map:
+                        gov_name = row[col_map["universite"]].strip()
+                    else:
+                        gov_name = "Inconnu"
+
+                    if "etablissement" in col_map:
+                        etab_name = row[col_map["etablissement"]].strip()
+                    elif "universite" in col_map:
+                        etab_name = row[col_map["universite"]].strip()
+                    else:
+                        etab_name = "Etablissement inconnu"
+
                     filiere_name = row[col_map["filiere"]].strip()
                     code = row[col_map.get("code_filiere", col_map["filiere"])].strip() if "code_filiere" in col_map else ""
                     section = row[col_map["section_bac"]].strip().upper() if "section_bac" in col_map else "M"
@@ -155,6 +174,7 @@ class Command(BaseCommand):
                             ("score_2022", 2022),
                             ("score_2023", 2023),
                             ("score_2024", 2024),
+                            ("score_2025", 2025),
                         ]:
                             if year_field not in col_map:
                                 continue

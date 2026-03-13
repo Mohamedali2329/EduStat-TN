@@ -47,8 +47,8 @@ class ScoreHistoriqueSerializer(serializers.ModelSerializer):
 class PredictionInputSerializer(serializers.Serializer):
     """Input for the admission prediction endpoint."""
     score = serializers.FloatField(
-        min_value=0, max_value=4,
-        help_text="Score du bachelier (sur 4)",
+        min_value=0, max_value=200,
+        help_text="Score du bachelier (barème réel, ex: 130)",
     )
     section_bac = serializers.CharField(
         max_length=3,
@@ -67,6 +67,40 @@ class PredictionOutputSerializer(serializers.Serializer):
     probabilite_admission = serializers.FloatField()
     score_dernier_admis_precedent = serializers.FloatField(allow_null=True)
     conseil = serializers.CharField()
+
+
+class RecommendationInputSerializer(serializers.Serializer):
+    """Input for multi-filiere recommendation endpoint."""
+    score = serializers.FloatField(
+        min_value=0, max_value=200,
+        help_text="Score du bachelier (barème réel, ex: 130)",
+    )
+    section_bac = serializers.CharField(
+        max_length=3,
+        help_text="Code section bac (M, S, T, E, L, I, SP)",
+    )
+    limit = serializers.IntegerField(
+        min_value=1,
+        max_value=30,
+        required=False,
+        default=10,
+        help_text="Nombre maximal de filières recommandées",
+    )
+
+
+class RecommendationItemSerializer(serializers.Serializer):
+    filiere_code = serializers.CharField()
+    filiere_nom = serializers.CharField()
+    universite_nom = serializers.CharField()
+    gouvernorat = serializers.CharField(allow_blank=True)
+    type_diplome = serializers.CharField(allow_blank=True)
+    score_min = serializers.FloatField()
+    score_moyen = serializers.FloatField()
+    score_max = serializers.FloatField()
+    dernier_seuil = serializers.FloatField()
+    marge = serializers.FloatField()
+    probabilite_estimee = serializers.FloatField()
+    niveau = serializers.CharField()
 
 
 class ChatMessageSerializer(serializers.Serializer):

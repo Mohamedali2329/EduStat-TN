@@ -22,6 +22,11 @@ interface Props {
 }
 
 export default function ScoresByYearChart({ data }: Props) {
+  const maxScore = data.length
+    ? Math.max(...data.map((d) => Math.max(d.score_max, d.score_moyen, d.score_min)))
+    : 0;
+  const axisMax = Math.max(20, Math.ceil((maxScore + 5) / 10) * 10);
+
   return (
     <div className="rounded-xl border bg-white p-6 shadow-sm">
       <h2 className="mb-4 text-lg font-semibold text-slate-700">
@@ -34,7 +39,7 @@ export default function ScoresByYearChart({ data }: Props) {
           <LineChart data={data}>
             <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
             <XAxis dataKey="annee" />
-            <YAxis domain={[0, 4]} />
+            <YAxis domain={[0, axisMax]} />
             <Tooltip
               formatter={(value: number) => value.toFixed(2)}
               labelFormatter={(label) => `Année ${label}`}

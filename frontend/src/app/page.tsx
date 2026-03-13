@@ -64,7 +64,10 @@ export default function DashboardPage() {
       </div>
 
       {/* Charts Row 2 */}
-      <ScoresByGovChart data={data.scores_par_gouvernorat} />
+      <ScoresByGovChart
+        data={data.scores_par_gouvernorat}
+        zoneLabel={data.meta?.zone_label || "gouvernorat"}
+      />
 
       {/* Top filières table */}
       <TopFilieresTable data={data.top_filieres_selectives} />

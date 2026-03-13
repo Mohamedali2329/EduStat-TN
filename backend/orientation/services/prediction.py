@@ -9,7 +9,7 @@ Usage (entraînement) :
 
 Usage (prédiction) :
     from orientation.services.prediction import predict_admission
-    result = predict_admission(score=2.85, section_bac="S", filiere_code="601")
+    result = predict_admission(score=130, section_bac="S", filiere_code="601")
 """
 import logging
 import os
@@ -76,7 +76,7 @@ def build_training_data() -> pd.DataFrame:
         seuil = row["score_dernier_admis"]
         # Exemple admis (score >= seuil)
         training_rows.append({
-            "score": seuil + np.random.uniform(0, 0.5),
+            "score": seuil + np.random.uniform(0.5, 8.0),
             "section_encoded": row["section_encoded"],
             "filiere_id": row["filiere_id"],
             "annee": row["annee"],
@@ -84,7 +84,7 @@ def build_training_data() -> pd.DataFrame:
         })
         # Exemple admis (score juste au-dessus)
         training_rows.append({
-            "score": seuil + np.random.uniform(0, 0.15),
+            "score": seuil + np.random.uniform(0.1, 2.0),
             "section_encoded": row["section_encoded"],
             "filiere_id": row["filiere_id"],
             "annee": row["annee"],
@@ -92,7 +92,7 @@ def build_training_data() -> pd.DataFrame:
         })
         # Exemple non admis (score < seuil)
         training_rows.append({
-            "score": max(0, seuil - np.random.uniform(0.01, 0.5)),
+            "score": max(0, seuil - np.random.uniform(0.1, 3.0)),
             "section_encoded": row["section_encoded"],
             "filiere_id": row["filiere_id"],
             "annee": row["annee"],
@@ -100,7 +100,7 @@ def build_training_data() -> pd.DataFrame:
         })
         # Exemple non admis (score bien en dessous)
         training_rows.append({
-            "score": max(0, seuil - np.random.uniform(0.3, 0.8)),
+            "score": max(0, seuil - np.random.uniform(3.0, 12.0)),
             "section_encoded": row["section_encoded"],
             "filiere_id": row["filiere_id"],
             "annee": row["annee"],
@@ -169,7 +169,7 @@ def predict_admission(score: float, section_bac: str, filiere_code: str) -> dict
     Prédit la probabilité d'admission.
 
     Args:
-        score: Score du bachelier (sur 4)
+        score: Score du bachelier (barème réel, ex: 130)
         section_bac: Code section (M, S, T, E, L, I, SP)
         filiere_code: Code de la filière
 
@@ -202,7 +202,7 @@ def predict_admission(score: float, section_bac: str, filiere_code: str) -> dict
         # Fallback heuristique si pas de modèle entraîné
         if dernier_score:
             diff = score - dernier_score.score_dernier_admis
-            proba = min(1.0, max(0.0, 0.5 + diff * 2))
+            proba = min(1.0, max(0.0, 0.5 + diff / 20.0))
         else:
             proba = 0.5
 

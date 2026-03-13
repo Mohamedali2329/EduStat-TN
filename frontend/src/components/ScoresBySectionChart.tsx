@@ -34,6 +34,11 @@ export default function ScoresBySectionChart({ data }: Props) {
     label: SECTION_LABELS[d.section_bac] || d.section_bac,
   }));
 
+  const maxScore = formatted.length
+    ? Math.max(...formatted.map((d) => d.score_moyen))
+    : 0;
+  const axisMax = Math.max(20, Math.ceil((maxScore + 5) / 10) * 10);
+
   return (
     <div className="rounded-xl border bg-white p-6 shadow-sm">
       <h2 className="mb-4 text-lg font-semibold text-slate-700">
@@ -46,7 +51,7 @@ export default function ScoresBySectionChart({ data }: Props) {
           <BarChart data={formatted}>
             <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
             <XAxis dataKey="label" />
-            <YAxis domain={[0, 4]} />
+            <YAxis domain={[0, axisMax]} />
             <Tooltip formatter={(value: number) => value.toFixed(2)} />
             <Bar dataKey="score_moyen" name="Score moyen" fill="#8b5cf6" radius={[4, 4, 0, 0]} />
           </BarChart>

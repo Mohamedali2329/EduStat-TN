@@ -35,6 +35,39 @@ Sois concis, utile et bienveillant."""
 DEFAULT_MODEL = getattr(settings, "OPENROUTER_MODEL", "mistralai/mistral-7b-instruct")
 
 
+def _fallback_orientation_response(user_message: str) -> dict:
+    """Return a basic offline chatbot response when external API is unavailable."""
+    msg = (user_message or "").lower()
+
+    if any(k in msg for k in ["info", "informatique", "computer", "dev"]):
+        text = (
+            "Si tu vises une filiere informatique en Tunisie, priorise surtout les choix "
+            "avec forte base en mathematiques et algorithmique. Compare les scores recents, "
+            "la ville, et les debouches (developpement, data, reseaux, cybersecurite)."
+        )
+    elif any(k in msg for k in ["medecine", "sante", "pharma"]):
+        text = (
+            "Pour les filieres sante, les scores sont souvent eleves et variables chaque annee. "
+            "Prepare une liste: choix ambitieux, choix realistes, et choix securite."
+        )
+    elif any(k in msg for k in ["math", "section m", "section s", "section"]):
+        text = (
+            "Le choix depend de ta section bac, ton score, et tes preferences. "
+            "Donne-moi ta section, ton score, et 2-3 domaines que tu aimes pour une recommandation ciblee."
+        )
+    else:
+        text = (
+            "Je peux t'aider pour l'orientation universitaire tunisienne: filieres, scores, "
+            "sections bac et debouches. Envoie ta section bac, ton score, et le domaine vise."
+        )
+
+    return {
+        "response": text,
+        "model": "fallback-local",
+        "usage": {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0},
+    }
+
+
 def chat_with_bot(user_message: str, conversation_history: list | None = None) -> dict:
     """
     Envoie un message au chatbot via l'API OpenRouter.
@@ -48,10 +81,8 @@ def chat_with_bot(user_message: str, conversation_history: list | None = None) -
     """
     api_key = settings.OPENROUTER_API_KEY
     if not api_key:
-        return {
-            "error": "Clé API OpenRouter non configurée. "
-                     "Ajoutez OPENROUTER_API_KEY dans le fichier .env"
-        }
+        logger.warning("OPENROUTER_API_KEY missing: using local fallback chatbot response")
+        return _fallback_orientation_response(user_message)
 
     # Build messages
     messages = [{"role": "system", "content": SYSTEM_PROMPT}]

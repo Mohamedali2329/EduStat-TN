@@ -4,7 +4,7 @@ ETL Standalone — Importation des données CSV
 Script utilisable sans Django pour nettoyer et valider le CSV.
 
 Usage :
-    python etl_standalone.py --csv data/scores.csv --output data/scores_clean.csv
+    python etl_standalone.py --csv 
 """
 import argparse
 import csv

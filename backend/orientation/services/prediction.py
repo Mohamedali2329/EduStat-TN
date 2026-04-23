@@ -5,7 +5,8 @@ Entraîne un modèle XGBoost sur les scores historiques et prédit
 la probabilité d'admission d'un bachelier à une filière donnée.
 
 Usage (entraînement) :
-    python manage.py train_model
+    Exécuter le notebook principal :
+    backend/notebooks/models_form.ipynb
 
 Usage (prédiction) :
     from orientation.services.prediction import predict_admission
@@ -28,7 +29,7 @@ SECTION_ENCODING = {
 
 MODEL_PATH = getattr(
     settings, "ML_MODEL_PATH",
-    os.path.join(os.path.dirname(__file__), "..", "ml", "model_xgboost.joblib"),
+    os.path.join(os.path.dirname(__file__), "..", "ml", "model_main.joblib"),
 )
 
 _model_cache = None

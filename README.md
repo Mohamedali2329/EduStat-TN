@@ -66,11 +66,11 @@ python manage.py runserver
 python manage.py import_scores --csv ../data/scores.csv --delimiter ";"
 ```
 
-**Entraîner le modèle XGBoost :**
+**Entraîner / réentraîner le modèle (Notebook principal) :**
 
-```bash
-python manage.py train_model
-```
+Ouvrir puis exécuter toutes les cellules du notebook :
+
+`backend/notebooks/models_form.ipynb`
 
 **Frontend :**
 

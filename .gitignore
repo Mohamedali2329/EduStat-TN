@@ -18,7 +18,7 @@ staticfiles/
 media/
 
 # ML model (large binary)
-orientation/ml/*.joblib
+backend/orientation/ml/*.joblib
 
 # Node
 node_modules/
